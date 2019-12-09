@@ -1,0 +1,32 @@
+def BFS(x, y, k):
+    q = []
+    q.append((x, y))
+    visited[x][y] = 1
+
+    while q:
+        x, y = q.pop(0)
+        for dx, dy in (-1, 0), (1, 0), (0, -1), (0, 1):
+            xx = x + dx
+            yy = y + dy
+            if not (0 <= xx < N and 0 <= yy < N): continue
+            if not visited[xx][yy] and mat[xx][yy] > k:
+                q.append((xx, yy))
+                visited[xx][yy] = 1
+
+
+
+N = int(input())
+mat = [list(map(int, input().split())) for _ in range(N)]
+
+ans = 0
+for k in range(max(max(mat))):
+    visited = [[0] * N for _ in range(N)]
+    cnt = 0
+    for i in range(N):
+        for j in range(N):
+            if not visited[i][j] and mat[i][j] > k:
+                BFS(i, j, k)
+                cnt += 1
+    ans = max(ans, cnt)
+
+print(ans)

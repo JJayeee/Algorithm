@@ -1,0 +1,61 @@
+def step1():
+    mat2 = [[0] * M for i in range(N)]
+
+    for x in range(N):
+        for y in range(M):
+            if mat[x][y] == 0: continue
+            for dx, dy in (-1, 0), (1, 0), (0, -1), (0, 1):
+                xx, yy = x + dx, y + dy
+                if mat[xx][yy] == 0:
+                    mat2[x][y] += 1
+
+    cnt = 0
+    x = 0
+    y = 0
+    for i in range(N):
+        for j in range(M):
+            mat[i][j] -= mat2[i][j]
+            if mat[i][j] < 0 : mat[i][j] = 0
+            if mat[i][j] :
+                cnt += 1
+                x = i
+                y = j
+    return x, y, cnt
+
+
+
+def BFS(x, y):
+    visited = [[0] * M for _ in range(N)]
+    q = []
+    q.append((x, y))
+    visited[x][y] = 1
+    cnt = 1
+
+    while q:
+        x, y = q.pop(0)
+        for dx, dy in (-1, 0), (1, 0), (0, -1), (0, 1):
+            xx = x + dx
+            yy = y + dy
+            if not visited[xx][yy] and mat[xx][yy] > 0:
+                q.append((xx, yy))
+                visited[xx][yy] = 1
+                cnt += 1
+    return cnt
+
+
+N, M = map(int, input().split())
+mat = [list(map(int, input().split())) for _ in range(N)]
+
+ans = 1
+
+while True:
+    x, y, cnt = step1()   #³ìÀÎ´Ù.
+    if cnt == 0:
+        ans = 0
+        break
+    cnt1 = BFS(x, y)
+    if cnt != cnt1:
+        break
+    ans += 1
+
+print(ans)
