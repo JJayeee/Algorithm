@@ -8,7 +8,6 @@ while 1:
     else:
         break
 
-min_res = n
 master = {k: [] for k in range(1, n+1)}
 for i in range(1, n+1):
     visited = [0] * (n+1)
@@ -23,11 +22,12 @@ for i in range(1, n+1):
                     if not visited[new_node]:
                         tmp_que.append(new_node)
         queue = tmp_que
-        tmp_cnt += 1
+        if queue:
+            tmp_cnt += 1
+
     if sum(visited) == n:
         master[tmp_cnt].append(i)
 
-print(master)
 for k, v in master.items():
     if len(v):
         print(k, len(v))
