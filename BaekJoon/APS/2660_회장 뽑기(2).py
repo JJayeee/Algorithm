@@ -13,14 +13,14 @@ for i in range(1, n+1):
     visited = [0] * (n+1)
     queue = [i]
     tmp_cnt = 0
+    visited[i] = 1
     while queue:
         tmp_que = []
         for q in queue:
-            if not visited[q]:
-                visited[q] = 1
-                for new_node in nodes[q]:
-                    if not visited[new_node]:
-                        tmp_que.append(new_node)
+            for new_node in nodes[q]:
+                if not visited[new_node]:
+                    tmp_que.append(new_node)
+                    visited[new_node] = 1
         queue = tmp_que
         if queue:
             tmp_cnt += 1
