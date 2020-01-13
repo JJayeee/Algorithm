@@ -1,34 +1,101 @@
-def iswall(x, y): return 0 <= x < n and 0 <= y < m
+def is_wall(x, y): return 0 <= x < n and 0 <= y < m
 
-def make_wall():
-    stack = [(0, 0)]
-    arr[0][0] = -1
-    target_cnt = 0
+
+def find_CO2(air_time, next_cheese_time, x, y):
+    global target_cnt
+    next_cheese_cnt = 0
+    stack = [(x, y)]
+    arr[x][y] = air_time
     while stack:
         kx, ky = stack.pop()
         for dx, dy in dxdy:
             nx, ny = kx + dx, ky + dy
-            if iswall(nx, ny):
+            if is_wall(nx, ny):
                 if arr[nx][ny] == 0:
-                    arr[nx][ny] = -1
+                    arr[nx][ny] = air_time
                     stack.append((nx, ny))
                 elif arr[nx][ny] == 1:
-                    target_cnt += 1
-                    arr[nx][ny] = 2
-    return target_cnt
+                    arr[nx][ny] = next_cheese_time
+                    target_cnt -= 1
+                    next_cheese_cnt += 1
+    return next_cheese_cnt
 
 
 n, m = map(int, input().split())
 arr = [list(map(int, input().split())) for _ in range(n)]
-visited = [[0]*m for _ in range(n)]
-arr_cnt = n * m
+target_cnt = sum(sum(arr, []))
+
+time = 2
 dxdy = [(0, 1), (0, -1), (1, 0), (-1, 0)]
-time = 0
-target_num = make_wall()
+result = find_CO2(time, time+1, 0, 0)
 
 print(*arr, sep='\n')
+print()
 
-for x in range(n):
-    for y in range(n):
-        if arr[x][y] == 2:
-            pass
+while target_cnt:
+    time += 1
+    next_cheese = 0
+    for x in range(n):
+        for y in range(m):
+            if arr[x][y] == time:
+                for dx, dy in dxdy:
+                    nx, ny = x + dx, y + dy
+                    if arr[nx][ny] == 1:
+                        arr[nx][ny] = time + 1
+                        next_cheese += 1
+                        target_cnt -= 1
+                    elif arr[nx][ny] == 0:
+                        next_cheese += find_CO2(time+1, time+1, nx, ny)
+    result = next_cheese
+    print(*arr, sep='\n')
+    print('time:', time, 'target_cnt:', target_cnt)
+    print()
+
+print(time-1)
+print(result)
+
+
+"""
+13 12
+0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 1 1 0 0 0
+0 1 1 1 0 0 0 1 1 0 0 0
+0 1 1 1 1 1 1 0 0 0 0 0
+0 1 1 1 1 1 0 1 1 0 0 0
+0 1 1 1 1 0 0 1 1 0 0 0
+0 0 1 1 0 0 0 1 1 0 0 0
+0 0 1 1 1 1 1 1 1 0 0 0
+0 0 1 1 1 1 1 1 1 0 0 0
+0 0 1 1 1 1 1 1 1 0 0 0
+0 0 1 1 1 1 1 1 1 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0
+
+2 2
+0 0
+0 0
+
+3 3
+0 0 0
+0 1 0
+0 0 0
+
+16 9
+0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0
+0 1 0 0 0 0 0 1 0
+0 1 1 1 1 1 1 1 0
+0 1 1 0 0 0 0 1 0
+0 1 0 1 1 1 1 0 0
+0 1 1 0 0 0 1 0 0
+0 1 1 1 1 1 1 1 0
+0 1 1 1 1 1 1 1 0
+0 1 0 0 0 0 0 1 0
+0 1 0 1 1 1 0 1 0
+0 1 0 1 0 1 0 1 0
+0 1 0 1 1 1 0 1 0
+0 1 0 0 0 0 0 1 0
+0 1 1 1 1 1 1 1 0
+0 0 0 0 0 0 0 0 0
+
+"""
