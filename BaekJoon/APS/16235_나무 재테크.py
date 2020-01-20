@@ -1,4 +1,3 @@
-
 N, M, K = map(int, input().split())  # N: arr, M: 나무 수, K: 시간
 arr = [[5]*N for _ in range(N)]  # 가장 처음에 양분은 모든 칸에 5만큼 들어있다
 nutrition_info_arr = [list(map(int, input().split())) for _ in range(N)]
