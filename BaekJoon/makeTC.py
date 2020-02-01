@@ -1,11 +1,16 @@
-a = '#'*50
-b = '#' + '.'*48 + '#'
+# a = '#'*50
+# b = '#' + '.'*48 + '#'
+#
+#
+# print(a)
+# for _ in range(48):
+#     print(b)
+# print(a)
 
+a = 21
+print(a%5)
+print(a//5)
 
-print(a)
-for _ in range(48):
-    print(b)
-print(a)
 
 """
 1
