@@ -1,149 +1,67 @@
+
+mals = [1, 1, 1, 1]
+where_is_mals = [0, 0, 0, 0]
+visited = [0] * 70
+board = [[],
+         [2*i for i in range(21)],
+         [10, 43, 46, 49, 55, 60, 65, 40],
+         [20, 52, 54, 55, 60, 65, 40],
+         [30, 58, 57, 56, 55, 60, 65, 40]]
+
+
 def sol(depth, k_sum):
     global max_sum
     if depth == 10:
-        max_sum = max(k_sum, max_sum)
+        max_sum = max(max_sum, k_sum)
     else:
         for i in range(4):
-            if mal_visited[i]:
-                k_where = mal_where[i]
-                n_where = mal_where[i] + dices[depth]
-                if mal_visited[i] == 1:
-                    if n_where > 20:
-                        mal_visited[i] = 0
-                        visited[simple[k_where]] = 0
+            if mals[i]:
+                k_where_mal = where_is_mals[i]
+                n_where_mal = k_where_mal + dice[depth]
+                visited[board[mals[i]][k_where_mal]] = 0
+                where_is_mals[i] = n_where_mal
+                temp = mals[i]
+                if mals[i] == 1:
+                    if n_where_mal > 20:
+                        mals[i] = 0
                         sol(depth+1, k_sum)
-                        visited[simple[k_where]] = 1
-                        mal_visited[i] = 1
-                    elif n_where < 21 and not visited[simple[n_where]]:
-                        if n_where % 5:  # 나머지가 있다면
-                            visited[simple[n_where]] = 1
-                            mal_where[i] = n_where
-                            visited[simple[k_where]] = 0
-                            sol(depth+1, k_sum+simple[n_where])
-                            mal_where[i] = k_where
-                            visited[simple[k_where]] = 1
-                            visited[simple[n_where]] = 0
-                        else:
-                            visited[simple[n_where]] = 1
-                            mal_visited[i] = n_where // 5 + 1 # 몫
-                            mal_where[i] = 0
-                            visited[simple[k_where]] = 0
-                            sol(depth+1, k_sum+simple[n_where])
-                            visited[simple[k_where]] = 1
-                            mal_where[i] = k_where
-                            mal_visited[i] = 1
-                            visited[simple[n_where]] = 0
-
-                elif mal_visited[i] == 2:
-                    if n_where < 8 and not visited[ten[n_where]]:
-                        visited[ten[n_where]] = 1
-                        mal_where[i] = n_where
-                        visited[ten[k_where]] = 0
-                        sol(depth+1, k_sum + ten[n_where]-30)
-                        visited[ten[k_where]] = 1
-                        visited[ten[n_where]] = 0
-                        mal_where[i] = k_where
-
-                    elif n_where == 8 and not visited[30]:
-                        visited[30] = 1
-                        mal_where[i] = 0
-                        mal_visited[i] = 3
-                        visited[ten[k_where]] = 0
-                        sol(depth+1, k_sum + 30)
-                        visited[ten[k_where]] = 1
-                        mal_visited[i] = 2
-                        mal_where[i] = k_where
-                        visited[30] = 0
-
-                    elif n_where > 8 and not visited[simple[15+n_where-8]]:
-                        visited[simple[7+n_where]] = 1
-                        mal_where[i] = 7+n_where
-                        mal_visited[i] = 1
-                        visited[ten[k_where]] = 0
-                        sol(depth+1, k_sum + simple[7+n_where])
-                        visited[ten[k_where]] = 1
-                        mal_visited[i] = 2
-                        mal_where[i] = k_where
-                        visited[simple[7+n_where]] = 0
-
-                elif mal_visited[i] == 3:
-                    if n_where < 8 and not visited[thirty[n_where]]:
-                        visited[thirty[n_where]] = 1
-                        mal_where[i] = n_where
-                        visited[thirty[k_where]] = 0
-                        sol(depth+1, k_sum + thirty[n_where]-30)
-                        visited[thirty[k_where]] = 1
-                        visited[thirty[n_where]] = 0
-                        mal_where[i] = k_where
-                    elif n_where == 8 and not visited[10]:
-                        visited[10] = 1
-                        mal_where[i] = 0
-                        mal_visited[i] = 2
-                        visited[thirty[k_where]] = 0
-                        sol(depth+1, k_sum + 10)
-                        visited[thirty[k_where]] = 1
-                        mal_visited[i] = 3
-                        mal_where[i] = k_where
-                        visited[10] = 0
-                    elif n_where > 8 and not visited[simple[5+n_where-8]]:
-                        visited[simple[n_where-3]] = 1
-                        mal_where[i] = n_where - 3
-                        mal_visited[i] = 1
-                        visited[thirty[k_where]] = 0
-                        sol(depth+1, k_sum + simple[n_where-3])
-                        visited[thirty[k_where]] = 1
-                        mal_visited[i] = 3
-                        mal_where[i] = k_where
-                        visited[simple[n_where-3]] = 0
+                    else:
+                        n_num = board[1][n_where_mal]
+                        if not visited[n_num]:
+                            if not n_num % 5 and n_num != 40:
+                                where_is_mals[i] = 0
+                                mals[i] = n_where_mal // 5 + 1
+                            visited[n_num] = 1
+                            sol(depth+1, k_sum + n_num)
+                            visited[n_num] = 0
 
                 else:
-                    if n_where < 5 and not visited[twenty[n_where]]:
-                        visited[twenty[n_where]] = 1
-                        visited[twenty[k_where]] = 0
-                        mal_where[i] = n_where
-                        sol(depth+1, k_sum + twenty[n_where]-30)
-                        visited[twenty[k_where]] = 1
-                        visited[twenty[n_where]] = 0
-                        mal_where[i] = k_where
-                    elif n_where == 6 and not visited[40]:
-                        visited[40] = 1
-                        mal_where[i] = 20
-                        mal_visited[i] = 1
-                        visited[twenty[k_where]] = 0
-                        sol(depth+1, k_sum + 40)
-                        visited[twenty[k_where]] = 1
-                        mal_visited[i] = 4
-                        mal_where[i] = k_where
-                        visited[40] = 0
-                    elif n_where > 6:
-                        mal_visited[i] = 0
-                        visited[twenty[k_where]] = 0
+                    if n_where_mal > len(board[temp]) - 1:
+                        mals[i] = 0
                         sol(depth+1, k_sum)
-                        visited[twenty[k_where]] = 1
-                        mal_visited[i] = 4
+                    else:
+                        n_num = board[temp][n_where_mal]
+                        if not visited[n_num]:
+                            if n_where_mal == len(board[temp]) - 1:
+                                mals[i] = 1
+                                where_is_mals[i] = 20
+                                visited[n_num] = 1
+                                sol(depth+1, k_sum + 40)
+                            else:
+                                visited[n_num] = 1
+                                sol(depth+1, k_sum + n_num - 30)
+                            visited[n_num] = 0
 
+                mals[i] = temp
+                where_is_mals[i] = k_where_mal
+                visited[board[mals[i]][k_where_mal]] = 1
 
-
-
-visited = [0] * 70
-# 0 ~ 40 까지 그대로 visited 체크, 25 는 그대로
-# 파란 점 라인은 + 30 되어있음
-
-simple = [2*i for i in range(21)]
-# print(simple)
-ten = [10, 43, 46, 49, 55, 56, 57, 58]  # 길이 8
-twenty = [20, 52, 54, 55, 60, 65]  # 길이 6
-thirty = [30, 58, 57, 56, 55, 49, 46, 43]  # 길이 8
-# root = [0, simple, ten, thirty, twenty]
-# 10, 20, 30 에서 멈출 때 가 문제인 상황
 
 max_sum = 0
-mal_visited = [1, 1, 1, 1]
-mal_where = [0, 0, 0, 0]
-dices = [int(i) for i in input().split()]
+dice = [int(w) for w in input().split()]
 sol(0, 0)
-print(max_sum)
 
+print(max_sum)
 """
 1 2 3 4 1 2 3 4 1 2
 1 1 1 1 1 1 1 1 1 1
