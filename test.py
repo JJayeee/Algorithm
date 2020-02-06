@@ -26,12 +26,15 @@
 # sol(0, [])
 
 
-arr = [1, 2, 3, 4, 5]
+# arr = [1, 2, 3, 4, 5]
+#
+# power_set = [[]]
+#
+# for num in arr:
+#     temp = [[num] + power for power in power_set]
+#     power_set += temp
+#
+# print(power_set)
 
-power_set = [[]]
-
-for num in arr:
-    temp = [[num] + power for power in power_set]
-    power_set += temp
-
-print(power_set)
+for i in range(30):
+    print(i, end=' ')
