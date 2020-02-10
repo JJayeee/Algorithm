@@ -1,83 +1,100 @@
 import sys
 sys.stdin = open('5650.txt', 'r')
 
+
+def iswall(x, y): return 0 <= x < n and 0 <= y < n
+
+
+changeD = [1, 0, 3, 2]
+dxdy = [(-1, 0), (1, 0), (0, -1), (0, 1)] # 상, 하, 좌, 우
+blocks = [[], [1, 3, 0, 2], [3, 0, 1, 2], [2, 0, 3, 1], [1, 2, 3, 0], [1, 0, 3, 2]]
 for tc in range(1, int(input())+1):
     n = int(input())
     arr = [list(map(int, input().split())) for _ in range(n)]
+    visited = [[[0, 0, 0, 0] for _ in range(n)] for _ in range(n)]
     # -1: 블랙홀, 0: 비어있음, 1~5: 블록, 6~10: 웜홀(최대 5쌍-진행방향유지)
     # 블랙홀, 웜홀에서 시작 X
     # 벽이나 블록에 부딪히면 점수 획득, 블랙홀 만나면 게임 종료
-    # 블럭 1: 상:0, 하:1, 좌:0, 우:1  <= 0은 end, 1은 x<->y
-    # 블럭 2: 상:1, 하:0, 좌:0, 우:1
-    # 블럭 3: 상:1, 하:0, 좌:1, 우:0
+    # 블럭 1: 상:0, 하:1, 좌:1, 우:0  <= 0은 end, 1은 x<->y
+    # 블럭 2: 상:1, 하:0, 좌:1, 우:0
+    # 블럭 3: 상:1, 하:0, 좌:0, 우:1
     # 블럭 4: 상:0, 하:1, 좌:1, 우:0
     # 블럭 5: 0, 0, 0, 0
-    # -> end point가 있는 부분만
-    # 각각 cnt돌리고 maxcnt에만 저장하기
-    wormhole = {6:[], 7:[], 8:[], 9:[], 10:[]}
-    # {6: [(4, 8), (9, 2)], 7: [(0, 8), (7, 6)], 8: [], 9: [], 10: []}
-    blocks_visited = {}
+
+    tempWormHoles = {6:[], 7:[], 8:[], 9:[], 10:[]}
     for x in range(n):
         for y in range(n):
-            if 5 < arr[x][y]:
-                wormhole[arr[x][y]].append((x, y))
-            elif 0 < arr[x][y]:
-                blocks_visited[(x, y)] = {(1,0):False, (-1,0):False, (0, 1):False, (0,-1):False}
+            if arr[x][y] >= 6:
+                tempWormHoles[arr[x][y]].append((x, y))
+    wormHoles = {}
+    for i in range(6, 11):
+        if tempWormHoles[i]:
+            v1, v2 = tempWormHoles[i]
+            wormHoles[v1] = v2
+            wormHoles[v2] = v1
 
-    blocks = {
-        1: {(-1, 0): (1, 0), (1, 0): (0, 1), (0, 1): (0, -1), (0, -1): (-1, 0)},
-        2: {(-1, 0): (0, 1), (1, 0): (-1, 0), (0, 1): (0, -1), (0, -1): (1, 0)},
-        3: {(-1, 0): (0, -1), (1, 0): (-1, 0), (0, 1): (1, 0), (0, -1): (0, 1)},
-        4: {(-1, 0): (1, 0), (1, 0): (0, -1), (0, 1): (-1, 0), (0, -1): (0, 1)},
-    }
     maxcnt = 0
+
     for x in range(n):
         for y in range(n):
-            move = 0
-            if 0 < arr[x][y] < 6:
-                move = [(0, -1), (0, 1), (1, 0), (-1, 0)]
-            elif x == 0: move = [(1, 0), (0, 1), (0, -1)]
-            elif x == n-1: move = [(-1, 0), (0, 1), (0, -1)]
-            elif y == 0: move = [(0, 1), (1, 0), (-1, 0)]
-            elif y == n-1: move = [(0, -1), (1, 0), (-1, 0)]
-            if move:
-                kx, ky = x, y
-                for dx, dy in move:
-                    cnt = 0
-                    zero = False
-                    flag = True
-                    while flag:
-                        kx += dx
-                        ky += dy
-                        if (kx, ky) == (x, y):
-                            break
-                        if 0<=kx<n and 0<=ky<n:
-                            if 0 < arr[kx][ky] < 5:
-                                if not blocks_visited[(x, y)][(dx, dy)]:
-                                    cnt += 1
-                                    blocks_visited[(x, y)][(dx, dy)] = True
-                                    dx, dy = blocks[arr[kx][ky]][(dx, dy)]
-                                else:
-                                    flag = False
-                            elif arr[kx][ky] == 5:
-                                cnt += 1
-                                dx, dy = -dx, -dy
-                            elif arr[kx][ky] == -1:
-                                break
-                            elif 5 < arr[kx][ky]:
-                                if (kx, ky) == wormhole[arr[kx][ky]][0]:
-                                    kx, ky = wormhole[arr[kx][ky]][1]
-                                else:
-                                    kx, ky = wormhole[arr[kx][ky]][0]
-                            else:
-                                zero = True
-                        else:
-                            cnt += 1
-                            dx, dy = -dx, -dy
-                    if not zero:
+            if not arr[x][y]:
+                for z in range(4):
+                    if not visited[x][y][z]:
                         cnt = 0
-                    if cnt > maxcnt:
-                        maxcnt = cnt
+                        queue = [(x, y, z), (x, y, changeD[z])]
+                        # print(queue, '================================')
+                        while cnt < 10 and queue:
+                            # print(queue, cnt, x, y, z)
+                            new_queue = []
+                            # if x == 0 and y == 2 and z == 2:
+                            #     print(queue)
+                            #     queue = []
+                            #     continue
+                            for kx, ky, d in queue:
+                                visited[kx][ky][d] = 1
+                                nx, ny = kx + dxdy[d][0], ky + dxdy[d][1]
 
-    print('#%d %d' % (tc, maxcnt))
+                                if cnt and (kx, ky) == (x, y):
+                                    continue
+
+                                if iswall(nx, ny):
+                                    if (nx, ny) == (x, y): # 돌아옴
+                                        visited[nx][ny][d] = 1
+
+                                    elif arr[nx][ny]:
+                                        if arr[nx][ny] < 0: # 블랙홀
+                                            cnt += 1
+                                        elif arr[nx][ny] >= 6: # 웜홀
+                                            wx, wy = wormHoles[(nx, ny)]
+                                            new_queue.append((wx, wy, d))
+                                        else:
+                                            # print(d)
+                                            # print(arr[nx][ny])
+                                            # print(blocks[arr[nx][ny]][d])
+                                            new_queue.append((nx, ny, blocks[arr[nx][ny]][d]))
+                                            # d = blocks[arr[nx][ny]][d]
+                                            cnt += 1
+                                            # kx, ky = nx, ny
+                                    # changeD = [1, 0, 3, 2]
+                                    # dxdy = [(-1, 0), (1, 0), (0, -1), (0, 1)]  # 상, 하, 좌, 우
+                                    # blocks = [[], [1, 3, 0, 2], [3, 0, 1, 2], [2, 0, 3, 1], [1, 2, 3, 0], [1, 0, 3, 2]]
+
+                                    else: # 직진
+                                        cnt += 1
+                                        new_queue.append((nx, ny, d))
+                                else: # 벽 튕김
+                                    cnt += 1
+                                    if 0 < arr[kx][ky] < 6:
+                                        new_queue.append((kx, ky, blocks[arr[kx][ky]][changeD[d]]))
+                                        cnt += 1
+                                    new_queue.append((kx, ky, changeD[d]))
+
+                            queue = new_queue
+                            # print(queue)
+
+                        maxcnt = max(cnt, maxcnt)
+                        # print(*visited, sep='\n')
+                        # print()
+
+    print('#%d %d' % (tc, maxcnt - 1))
 
