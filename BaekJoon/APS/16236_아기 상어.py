@@ -1,3 +1,6 @@
+def is_wall(x, y): return 0 <= x < n and 0 <= y < n
+
+
 def sol(x, y):
     global feed, size, fishes
     visited = [[0] * n for _ in range(n)]
@@ -13,7 +16,7 @@ def sol(x, y):
                 fishes.append((d, kx, ky))
             for dx, dy in (0, 1), (0, -1), (1, 0), (-1, 0):
                 nx, ny = kx + dx, ky + dy
-                if 0<=nx<n and 0 <=ny<n and not visited[nx][ny] and arr[nx][ny] <= size:
+                if is_wall(nx, ny) and not visited[nx][ny] and arr[nx][ny] <= size:
                     tmp += [(d+1, nx, ny)]
                     visited[nx][ny] = 1
         queue = tmp
