@@ -86,7 +86,6 @@
 # else:
 #     print(-1)
 
-from collections import deque
 
 def is_wall(x, y): return 0 <= x < h and 0 <= y < w
 
@@ -98,51 +97,43 @@ arr = [list(map(int, input().split())) for _ in range(h)]
 dxdy = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 dxdy_horse = [(-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1)]
 
-cnt = w * h + 5
-visited = [[[cnt]*(k+1) for _ in range(w)] for _ in range(h)]
-visited[h-1][w-1][k] = 0
+visited = [[-1] * w for _ in range(h)]
+visited[h-1][w-1] = 0
 
-queue = deque([(h-1, w-1, k, 0)])
+queue = [(h-1, w-1, k, 0)]
 # print(*visited, sep='\n')
 # print()
-tcnt = 0
-flag = False
-while queue:
 
-    # print(queue)
+flag = False
+result = -1
+while queue:
     # print(*visited, sep='\n')
     # print()
-    # new_queue = []
-    kx, ky, kh, kc = queue.popleft()
-    # for kx, ky, kh in queue:
+    new_queue = []
 
-    if kx == 0 and ky == 0:
-        flag = True
-        break
+    for kx, ky, kh, kc in queue:
 
-    # kcnt = visited[kx][ky][kh]
+        if kx == 0 and ky == 0:
+            new_queue = []
+            result = kc
+            break
 
-    if kh:
-        for dx, dy in dxdy_horse:
+        for dx, dy in dxdy:
             nx, ny = kx + dx, ky + dy
-            if is_wall(nx, ny) and not arr[nx][ny] and visited[nx][ny][kh-1] > kc + 1:
-                visited[nx][ny][kh-1] = kc + 1
-                queue.append((nx, ny, kh-1, kc + 1))
+            if is_wall(nx, ny) and not arr[nx][ny] and (visited[nx][ny] == -1 or visited[nx][ny] < kh):
+                visited[nx][ny] = kh
+                new_queue.append((nx, ny, kh, kc + 1))
 
-    for dx, dy in dxdy:
-        nx, ny = kx + dx, ky + dy
-        if is_wall(nx, ny) and not arr[nx][ny] and visited[nx][ny][kh] > kc + 1:
-            visited[nx][ny][kh] = kc + 1
-            queue.append((nx, ny, kh, kc + 1))
+        if kh:
+            for dx, dy in dxdy_horse:
+                nx, ny = kx + dx, ky + dy
+                if is_wall(nx, ny) and not arr[nx][ny] and (visited[nx][ny] == -1 or visited[nx][ny] < kh - 1):
+                    visited[nx][ny] = kh - 1
+                    new_queue.append((nx, ny, kh-1, kc + 1))
 
-    # tcnt += 1
-    # queue = new_queue
+    queue = new_queue
 
-result = min(visited[0][0])
-if flag:
-    print(result)
-else:
-    print(-1)
+print(result)
 
 
 
